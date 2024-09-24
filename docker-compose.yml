@@ -16,12 +16,18 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8080:5090"
+      - "80:5090"
     depends_on:
       - mongodb
     environment:
       - MONGODB_URI=mongodb://root:rootpassword@mongodb:27017/orrery_db?authSource=admin
       - JWT_SECRET=your_secret_key_here
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   mongodb_data:
