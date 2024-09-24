@@ -10,6 +10,8 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=rootpassword
     command: mongod --bind_ip_all
+    ports:
+      - "27017:27017"  # Add this line to expose MongoDB port
 
   backend:
     build:
@@ -26,8 +28,7 @@ services:
       - app-network
 
 networks:
-  app-network:
-    driver: bridge
+  app-network
 
 volumes:
   mongodb_data:
