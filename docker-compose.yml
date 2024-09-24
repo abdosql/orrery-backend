@@ -3,7 +3,6 @@ version: '3.8'
 services:
   mongodb:
     image: mongo:latest
-    # Remove the port mapping for MongoDB
     volumes:
       - mongodb_data:/data/db
     environment:
@@ -11,7 +10,9 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=rootpassword
     command: mongod --bind_ip_all
     ports:
-      - "27017:27017"  # Add this line to expose MongoDB port
+      - "27017:27017"
+    networks:
+      - app-network
 
   backend:
     build:
@@ -28,7 +29,8 @@ services:
       - app-network
 
 networks:
-  app-network
+  app-network:
+    driver: bridge
 
 volumes:
   mongodb_data:
