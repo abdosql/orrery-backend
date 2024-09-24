@@ -4,7 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('./models/User');
+const User = require('../models/User');
 const mongoose = require('mongoose');
 
 dotenv.config();
@@ -23,7 +23,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-const apiRoutes = require('./routes/api');
+const apiRoutes = require('../routes/api');
 app.use('/api', apiRoutes);
 
 app.post('/api/users/register', async (req, res) => {
