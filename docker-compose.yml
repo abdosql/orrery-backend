@@ -16,7 +16,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5090:5090"
     depends_on:
       - mongodb
     environment:
