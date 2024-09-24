@@ -99,4 +99,7 @@ app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });
 
-module.exports = app; // Add this line to export the app
+// Add this line
+console.log(`Server is configured to listen on 0.0.0.0:${port}`);
+
+module.exports = app;

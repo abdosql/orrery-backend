@@ -16,7 +16,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "5090:5090"  # Changed back to 5090
+      - "8080:5090"
     depends_on:
       - mongodb
     environment:
