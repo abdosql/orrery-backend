@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 .catch(err => console.error('MongoDB connection error:', err));
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5090;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -95,7 +95,7 @@ app.post('/api/users/login', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });
 
