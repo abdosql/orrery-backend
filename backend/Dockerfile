@@ -1,9 +1,6 @@
-FROM node:16
+FROM node:18
 
 WORKDIR /usr/src/app
-
-# Update npm to the latest version
-RUN npm install -g npm@latest
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
