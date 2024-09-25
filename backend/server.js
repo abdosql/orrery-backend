@@ -6,6 +6,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const mongoose = require('mongoose');
+const neoRoutes = require('./routes/neoRoutes');
+const cron = require('node-cron');
+const { storeNEOData } = require('./controllers/neoController');
 
 dotenv.config();
 
@@ -101,5 +104,22 @@ app.listen(port, '0.0.0.0', () => {
 
 // Add this line
 console.log(`Server is configured to listen on 0.0.0.0:${port}`);
+
+// Run the job every day at midnight
+cron.schedule('0 0 * * *', async () => {
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  try {
+    await storeNEOData({ query: { start_date: yesterday, end_date: today } }, { json: () => {} });
+    console.log('Daily NEO data update completed');
+    
+    // Add ESA data update
+    const esaData = await getESANEOData();
+    // Process and store ESA data as needed
+    console.log('ESA NEO data update completed');
+  } catch (error) {
+    console.error('Error updating NEO data:', error);
+  }
+});
 
 module.exports = app;
