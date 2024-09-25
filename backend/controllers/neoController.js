@@ -4,6 +4,7 @@ const NEO = require('../models/neo');
 exports.getNEOs = async (req, res) => {
   try {
     const { start_date, end_date } = req.query;
+    console.log('Fetching NEOs for dates:', start_date, end_date);
     
     // Check if we have data for this date range in the database
     const existingData = await NEO.find({
@@ -40,6 +41,10 @@ exports.getNEOs = async (req, res) => {
       near_earth_objects: data.near_earth_objects
     });
   } catch (error) {
+    console.error('Error in getNEOs:', error);
+    if (error.response) {
+      console.error('Error details:', error.response.data);
+    }
     res.status(500).json({ message: 'Error fetching NEO data', error: error.message });
   }
 };

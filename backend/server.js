@@ -50,4 +50,6 @@ cron.schedule('0 0 * * *', async () => {
 
 console.log('NASA_API_KEY:', process.env.NASA_API_KEY);
 
+console.log('Environment variables loaded:', process.env.NASA_API_KEY ? 'NASA_API_KEY is set' : 'NASA_API_KEY is not set');
+
 module.exports = app;
