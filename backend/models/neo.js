@@ -1,52 +1,48 @@
 const mongoose = require('mongoose');
 
 const neoSchema = new mongoose.Schema({
-  neo_reference_id: String,
+  id: String,
+  neo_reference_id: { type: String, required: true, unique: true },
   name: String,
   nasa_jpl_url: String,
   absolute_magnitude_h: Number,
   estimated_diameter: {
     kilometers: {
-      min: Number,
-      max: Number
+      estimated_diameter_min: Number,
+      estimated_diameter_max: Number
+    },
+    meters: {
+      estimated_diameter_min: Number,
+      estimated_diameter_max: Number
+    },
+    miles: {
+      estimated_diameter_min: Number,
+      estimated_diameter_max: Number
+    },
+    feet: {
+      estimated_diameter_min: Number,
+      estimated_diameter_max: Number
     }
   },
   is_potentially_hazardous_asteroid: Boolean,
   close_approach_data: [{
-    close_approach_date: Date,
-    miss_distance: {
-      kilometers: Number
-    },
+    close_approach_date: String,
+    close_approach_date_full: String,
+    epoch_date_close_approach: Number,
     relative_velocity: {
-      kilometers_per_second: Number
-    }
+      kilometers_per_second: String,
+      kilometers_per_hour: String,
+      miles_per_hour: String
+    },
+    miss_distance: {
+      astronomical: String,
+      lunar: String,
+      kilometers: String,
+      miles: String
+    },
+    orbiting_body: String
   }],
-  orbital_data: {
-    orbit_id: String,
-    orbit_determination_date: Date,
-    first_observation_date: Date,
-    last_observation_date: Date,
-    data_arc_in_days: Number,
-    observations_used: Number,
-    orbit_uncertainty: String,
-    minimum_orbit_intersection: Number,
-    jupiter_tisserand_invariant: Number,
-    epoch_osculation: Date,
-    eccentricity: Number,
-    semi_major_axis: Number,
-    inclination: Number,
-    ascending_node_longitude: Number,
-    orbital_period: Number,
-    perihelion_distance: Number,
-    perihelion_argument: Number,
-    aphelion_distance: Number,
-    perihelion_time: Date,
-    mean_anomaly: Number,
-    mean_motion: Number,
-    equinox: String
-  }
-});
-
-neoSchema.index({ name: 'text', neo_reference_id: 'text' });
+  is_sentry_object: Boolean
+}, { strict: false });
 
 module.exports = mongoose.model('NEO', neoSchema);
