@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -51,5 +53,7 @@ cron.schedule('0 0 * * *', async () => {
 console.log('NASA_API_KEY:', process.env.NASA_API_KEY);
 
 console.log('Environment variables loaded:', process.env.NASA_API_KEY ? 'NASA_API_KEY is set' : 'NASA_API_KEY is not set');
+
+console.log('NASA API Key:', process.env.NASA_API_KEY ? 'Set' : 'Not set');
 
 module.exports = app;

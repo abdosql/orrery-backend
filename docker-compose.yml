@@ -25,7 +25,7 @@ services:
     environment:
       - MONGODB_URI=mongodb://root:rootpassword@mongodb:27017/orrery_db?authSource=admin
       - JWT_SECRET=your_secret_key_here
-      - NASA_API_KEY=${NASA_API_KEY}
+      - NASA_API_KEY=WxfeB2yJCLFtQMOp0Atbpj77LP0LYTFMf3HLUBpH
     networks:
       - app-network
 

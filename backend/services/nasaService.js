@@ -5,6 +5,9 @@ const NASA_BASE_URL = 'https://api.nasa.gov/neo/rest/v1';
 console.log('NASA API Key:', NASA_API_KEY); // Add this line
 
 async function getNEOFeed(startDate, endDate) {
+  if (!NASA_API_KEY) {
+    throw new Error('NASA API Key is not set');
+  }
   try {
     const response = await axios.get(`${NASA_BASE_URL}/feed`, {
       params: {
