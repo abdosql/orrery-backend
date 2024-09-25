@@ -105,9 +105,10 @@ app.post('/api/users/login', async (req, res) => {
   }
 });
 
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Test route is working' });
-});
+// Remove the test route
+// app.get('/api/test', (req, res) => {
+//   res.json({ message: 'Test route is working' });
+// });
 
 // Add this just before module.exports = app;
 app.use((req, res) => {
@@ -147,4 +148,10 @@ cron.schedule('0 0 * * *', async () => {
   } catch (error) {
     console.error('Error updating NEO data:', error);
   }
+});
+
+// Schedule the database update to run every day at midnight
+cron.schedule('0 0 * * *', () => {
+  console.log('Running daily update of NEO database');
+  updateNEODatabase();
 });

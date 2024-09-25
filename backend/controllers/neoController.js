@@ -1,23 +1,21 @@
 const { getNEOFeed, getNEOLookup, getESANEOData } = require('../services/nasaService');
-const NEO = require('../models/neo'); // You'll need to create this model
+const NEO = require('../models/neo');
 
 exports.getNEOs = async (req, res) => {
   try {
     const { start_date, end_date } = req.query;
-    console.log('Fetching NEO data for:', start_date, end_date);
-    
     const [nasaData, esaData] = await Promise.all([
       getNEOFeed(start_date, end_date),
       getESANEOData()
     ]);
     
-    console.log('NASA data fetched:', !!nasaData);
-    console.log('ESA data fetched:', !!esaData);
-    
     const combinedData = {
       nasa: nasaData,
       esa: esaData
     };
+    
+    // Store the combined data in the database
+    await NEO.insertMany(combinedData.nasa.near_earth_objects.flat());
     
     res.json(combinedData);
   } catch (error) {
@@ -33,20 +31,6 @@ exports.getNEOById = async (req, res) => {
     res.json(neoData);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching NEO data', error: error.message });
-  }
-};
-
-exports.storeNEOData = async (req, res) => {
-  try {
-    const { start_date, end_date } = req.query;
-    const neoData = await getNEOFeed(start_date, end_date);
-    
-    // Store the data in MongoDB
-    await NEO.insertMany(neoData.near_earth_objects);
-    
-    res.json({ message: 'NEO data stored successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error storing NEO data', error: error.message });
   }
 };
 
@@ -78,7 +62,6 @@ exports.getClosestApproach = async (req, res) => {
   }
 };
 
-// Add this method for diameter range search
 exports.getNEOsByDiameterRange = async (req, res) => {
   try {
     const { min, max } = req.query;
@@ -92,11 +75,44 @@ exports.getNEOsByDiameterRange = async (req, res) => {
   }
 };
 
-// Make sure all functions are exported
+// Add a new function to update the database periodically
+exports.updateNEODatabase = async () => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    const [nasaData, esaData] = await Promise.all([
+      getNEOFeed(today, sevenDaysLater),
+      getESANEOData()
+    ]);
+    
+    // Update or insert NASA data
+    for (const neo of nasaData.near_earth_objects.flat()) {
+      await NEO.findOneAndUpdate(
+        { neo_reference_id: neo.neo_reference_id },
+        neo,
+        { upsert: true, new: true }
+      );
+    }
+    
+    // Update or insert ESA data (assuming ESA data structure)
+    for (const neo of esaData) {
+      await NEO.findOneAndUpdate(
+        { neo_reference_id: neo.neo_reference_id },
+        neo,
+        { upsert: true, new: true }
+      );
+    }
+    
+    console.log('NEO database updated successfully');
+  } catch (error) {
+    console.error('Error updating NEO database:', error);
+  }
+};
+
 module.exports = {
   getNEOs,
   getNEOById,
-  storeNEOData,
   searchNEOs,
   getHazardousNEOs,
   getClosestApproach,
