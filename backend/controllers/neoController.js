@@ -2,14 +2,20 @@ const { getNEOFeed, getNEOLookup } = require('../services/nasaService');
 const NEO = require('../models/neo');
 
 exports.getNEOs = async (req, res) => {
+  let logs = [];
   try {
+    logs.push('getNEOs function called');
     const { start_date, end_date } = req.query;
+    logs.push(`Query parameters: start_date=${start_date}, end_date=${end_date}`);
+
+    logs.push('Fetching NEO feed from NASA API');
     const data = await getNEOFeed(start_date, end_date);
-    
-    // Flatten the near_earth_objects array
+    logs.push('NEO feed data received from NASA API');
+
     const neos = Object.values(data.near_earth_objects).flat();
-    
-    // Store the data in MongoDB
+    logs.push(`Number of NEOs received: ${neos.length}`);
+
+    logs.push('Storing NEO data in MongoDB');
     for (const neo of neos) {
       await NEO.findOneAndUpdate(
         { neo_reference_id: neo.neo_reference_id },
@@ -17,14 +23,21 @@ exports.getNEOs = async (req, res) => {
         { upsert: true, new: true }
       );
     }
-    
+    logs.push('NEO data stored in MongoDB');
+
     res.json({
+      logs: logs,
       links: data.links,
       element_count: data.element_count,
       near_earth_objects: data.near_earth_objects
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching NEO data', error: error.message });
+    logs.push(`Error occurred: ${error.message}`);
+    res.status(500).json({ 
+      logs: logs,
+      message: 'Error fetching NEO data', 
+      error: error.message 
+    });
   }
 };
 
