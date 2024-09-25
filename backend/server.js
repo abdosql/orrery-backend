@@ -26,6 +26,9 @@ const port = process.env.PORT || 5090;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Add this line to connect the NEO routes
+app.use('/api/neos', neoRoutes);
+
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
 
