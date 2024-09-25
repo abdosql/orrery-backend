@@ -4,10 +4,29 @@ const NEO = require('../models/neo');
 exports.getNEOs = async (req, res) => {
   try {
     const { start_date, end_date } = req.query;
+    
+    // Check if we have data for this date range in the database
+    const existingData = await NEO.find({
+      'close_approach_data.close_approach_date': {
+        $gte: start_date,
+        $lte: end_date
+      }
+    });
+
+    if (existingData.length > 0) {
+      // If we have data in the database, return it
+      return res.json({
+        element_count: existingData.length,
+        near_earth_objects: existingData
+      });
+    }
+
+    // If no data in database, fetch from NASA API
     const data = await getNEOFeed(start_date, end_date);
 
     const neos = Object.values(data.near_earth_objects).flat();
     
+    // Store the fetched data in the database
     for (const neo of neos) {
       await NEO.findOneAndUpdate(
         { neo_reference_id: neo.neo_reference_id },
@@ -17,7 +36,6 @@ exports.getNEOs = async (req, res) => {
     }
 
     res.json({
-      links: data.links,
       element_count: data.element_count,
       near_earth_objects: data.near_earth_objects
     });
@@ -29,11 +47,17 @@ exports.getNEOs = async (req, res) => {
 exports.getNEOById = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // Check if the NEO exists in our database
     let neo = await NEO.findOne({ neo_reference_id: id });
+    
     if (!neo) {
+      // If not in database, fetch from NASA API
       const data = await getNEOLookup(id);
+      // Store the fetched data in the database
       neo = await NEO.create(data);
     }
+    
     res.json(neo);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching NEO data', error: error.message });
