@@ -29,9 +29,9 @@ const port = process.env.PORT || 5090;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Add this line to connect the NEO routes
+// Mount the NEO routes
 app.use('/api/neos', neoRoutes);
-console.log('neoRoutes middleware added');
+console.log('NEO routes mounted at /api/neos');
 
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);

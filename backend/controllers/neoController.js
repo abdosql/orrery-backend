@@ -92,6 +92,7 @@ exports.getNEOsByDiameterRange = async (req, res) => {
   }
 };
 
+// Make sure all functions are exported
 module.exports = {
   getNEOs,
   getNEOById,
@@ -100,5 +101,4 @@ module.exports = {
   getHazardousNEOs,
   getClosestApproach,
   getNEOsByDiameterRange,
-  // Add any other functions you've defined
 };

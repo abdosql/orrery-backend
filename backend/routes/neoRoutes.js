@@ -13,14 +13,6 @@ router.get('/hazardous', neoController.getHazardousNEOs);
 router.get('/closest', neoController.getClosestApproach);
 router.get('/diameter-range', neoController.getNEOsByDiameterRange);
 
-// Routes for other entities
-router.get('/observations', neoController.getObservations);
-router.post('/observations', neoController.addObservation);
-router.get('/risk-assessments', neoController.getRiskAssessments);
-router.post('/risk-assessments', neoController.addRiskAssessment);
-router.get('/simulations', neoController.getSimulationResults);
-router.post('/simulations', neoController.runSimulation);
-
 // Test route
 router.get('/test', (req, res) => {
   res.json({ message: 'NEO routes test is working' });
