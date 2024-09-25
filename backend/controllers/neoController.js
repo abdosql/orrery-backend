@@ -4,17 +4,24 @@ const NEO = require('../models/neo'); // You'll need to create this model
 exports.getNEOs = async (req, res) => {
   try {
     const { start_date, end_date } = req.query;
+    console.log('Fetching NEO data for:', start_date, end_date);
+    
     const [nasaData, esaData] = await Promise.all([
       getNEOFeed(start_date, end_date),
       getESANEOData()
     ]);
-    // Combine and process NASA and ESA data as needed
+    
+    console.log('NASA data fetched:', !!nasaData);
+    console.log('ESA data fetched:', !!esaData);
+    
     const combinedData = {
       nasa: nasaData,
       esa: esaData
     };
+    
     res.json(combinedData);
   } catch (error) {
+    console.error('Error in getNEOs:', error);
     res.status(500).json({ message: 'Error fetching NEO data', error: error.message });
   }
 };
@@ -83,4 +90,15 @@ exports.getNEOsByDiameterRange = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error fetching NEOs by diameter range', error: error.message });
   }
+};
+
+module.exports = {
+  getNEOs,
+  getNEOById,
+  storeNEOData,
+  searchNEOs,
+  getHazardousNEOs,
+  getClosestApproach,
+  getNEOsByDiameterRange,
+  // Add any other functions you've defined
 };

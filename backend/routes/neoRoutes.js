@@ -21,4 +21,9 @@ router.post('/risk-assessments', neoController.addRiskAssessment);
 router.get('/simulations', neoController.getSimulationResults);
 router.post('/simulations', neoController.runSimulation);
 
+// Test route
+router.get('/test', (req, res) => {
+  res.json({ message: 'NEO routes test is working' });
+});
+
 module.exports = router;

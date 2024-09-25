@@ -7,8 +7,11 @@ const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const mongoose = require('mongoose');
 const neoRoutes = require('./routes/neoRoutes');
+console.log('neoRoutes imported:', neoRoutes);
 const cron = require('node-cron');
 const { storeNEOData } = require('./controllers/neoController');
+const { getESANEOData } = require('./services/nasaService');
+const NEO = require('./models/neo');
 
 dotenv.config();
 
@@ -28,6 +31,7 @@ app.use(bodyParser.json());
 
 // Add this line to connect the NEO routes
 app.use('/api/neos', neoRoutes);
+console.log('neoRoutes middleware added');
 
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
@@ -113,16 +117,28 @@ cron.schedule('0 0 * * *', async () => {
   const today = new Date().toISOString().split('T')[0];
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
   try {
+    // Update NASA NEO data
     await storeNEOData({ query: { start_date: yesterday, end_date: today } }, { json: () => {} });
-    console.log('Daily NEO data update completed');
+    console.log('Daily NASA NEO data update completed');
     
-    // Add ESA data update
+    // Update ESA NEO data
     const esaData = await getESANEOData();
-    // Process and store ESA data as needed
+    // Process and store ESA data
+    for (const neo of esaData) {
+      await NEO.findOneAndUpdate(
+        { neo_reference_id: neo.neo_reference_id },
+        neo,
+        { upsert: true, new: true }
+      );
+    }
     console.log('ESA NEO data update completed');
   } catch (error) {
     console.error('Error updating NEO data:', error);
   }
+});
+
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Test route is working' });
 });
 
 module.exports = app;
