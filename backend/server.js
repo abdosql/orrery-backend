@@ -105,12 +105,24 @@ app.post('/api/users/login', async (req, res) => {
   }
 });
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server running on port ${port}`);
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Test route is working' });
 });
 
-// Add this line
-console.log(`Server is configured to listen on 0.0.0.0:${port}`);
+// Add this just before module.exports = app;
+app.use((req, res) => {
+  console.log(`Unmatched route: ${req.method} ${req.url}`);
+  res.status(404).send('Route not found');
+});
+
+// Move this line to the end of the file
+module.exports = app;
+
+// Start the server
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+  console.log(`Server is configured to listen on 0.0.0.0:${port}`);
+});
 
 // Run the job every day at midnight
 cron.schedule('0 0 * * *', async () => {
@@ -136,9 +148,3 @@ cron.schedule('0 0 * * *', async () => {
     console.error('Error updating NEO data:', error);
   }
 });
-
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Test route is working' });
-});
-
-module.exports = app;
