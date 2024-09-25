@@ -4,8 +4,12 @@ const NEO = require('../models/neo');
 exports.getNEOs = async (req, res) => {
   try {
     const { start_date, end_date } = req.query;
-    console.log('Fetching NEOs for dates:', start_date, end_date);
     
+    // Log the NASA API key in the response
+    const apiKeyStatus = process.env.NASA_API_KEY ? 
+      `API Key is set: ${process.env.NASA_API_KEY.substring(0, 5)}...` : 
+      'API Key is not set';
+
     // Check if we have data for this date range in the database
     const existingData = await NEO.find({
       'close_approach_data.close_approach_date': {
@@ -17,6 +21,7 @@ exports.getNEOs = async (req, res) => {
     if (existingData.length > 0) {
       // If we have data in the database, return it
       return res.json({
+        apiKeyStatus,
         element_count: existingData.length,
         near_earth_objects: existingData
       });
@@ -37,6 +42,7 @@ exports.getNEOs = async (req, res) => {
     }
 
     res.json({
+      apiKeyStatus,
       element_count: data.element_count,
       near_earth_objects: data.near_earth_objects
     });
@@ -45,7 +51,13 @@ exports.getNEOs = async (req, res) => {
     if (error.response) {
       console.error('Error details:', error.response.data);
     }
-    res.status(500).json({ message: 'Error fetching NEO data', error: error.message });
+    res.status(500).json({ 
+      message: 'Error fetching NEO data', 
+      error: error.message,
+      apiKeyStatus: process.env.NASA_API_KEY ? 
+        `API Key is set: ${process.env.NASA_API_KEY.substring(0, 5)}...` : 
+        'API Key is not set'
+    });
   }
 };
 
