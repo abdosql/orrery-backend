@@ -6,7 +6,6 @@ exports.getNEOs = async (req, res) => {
     const data = await getNEOFeed(start_date, end_date);
     res.json(data);
   } catch (error) {
-    console.error('Error in getNEOs:', error);
     res.status(500).json({ message: 'Error fetching NEO data', error: error.message });
   }
 };
