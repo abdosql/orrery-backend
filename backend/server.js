@@ -12,6 +12,7 @@ const cron = require('node-cron');
 const { storeNEOData } = require('./controllers/neoController');
 const { getESANEOData } = require('./services/nasaService');
 const NEO = require('./models/neo');
+const userRoutes = require('./routes/userRoutes');
 
 dotenv.config();
 
@@ -28,6 +29,10 @@ const port = process.env.PORT || 5090;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// Mount the user routes
+app.use('/api/users', userRoutes);
+console.log('User routes mounted at /api/users');
 
 // Mount the NEO routes
 app.use('/api/neos', neoRoutes);
@@ -155,3 +160,5 @@ cron.schedule('0 0 * * *', () => {
   console.log('Running daily update of NEO database');
   updateNEODatabase();
 });
+
+console.log('NASA_API_KEY:', process.env.NASA_API_KEY);
