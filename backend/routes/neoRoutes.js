@@ -12,4 +12,4 @@ router.get('/hazardous', neoController.getHazardousNEOs);
 router.get('/closest', neoController.getClosestApproach);
 router.get('/diameter-range', neoController.getNEOsByDiameterRange);
 
-module.exports = router;fi
+module.exports = router;
