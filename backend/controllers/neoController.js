@@ -84,7 +84,12 @@ exports.getNEOById = async (req, res) => {
 exports.searchNEOs = async (req, res) => {
   try {
     const { query } = req.query;
-    const neos = await NEO.find({ $text: { $search: query } });
+    const neos = await NEO.find({ 
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { neo_reference_id: { $regex: query, $options: 'i' } }
+      ]
+    });
     res.json(neos);
   } catch (error) {
     res.status(500).json({ message: 'Error searching NEOs', error: error.message });
