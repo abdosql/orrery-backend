@@ -3,7 +3,6 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const neoRoutes = require('./routes/neoRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -12,17 +11,32 @@ const { storeNEOData } = require('./controllers/neoController');
 const { getESANEOData } = require('./services/nasaService');
 const NEO = require('./models/neo');
 
-dotenv.config();
-
 const app = express();
 const port = process.env.PORT || 5090;
 
-// Middleware
+// CORS middleware
 app.use(cors({
-  origin: 'https://astrolab-nasa.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: ['https://astrolab-nasa.vercel.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 204
 }));
+
+// Handle preflight requests
+app.options('*', cors());
+
+// Add body-parser middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  next();
+});
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
@@ -53,10 +67,6 @@ cron.schedule('0 0 * * *', async () => {
   // ... (keep your existing cron job code here)
 });
 
-console.log('NASA_API_KEY:', process.env.NASA_API_KEY);
-
-console.log('Environment variables loaded:', process.env.NASA_API_KEY ? 'NASA_API_KEY is set' : 'NASA_API_KEY is not set');
-
-console.log('NASA API Key:', process.env.NASA_API_KEY ? 'Set' : 'Not set');
+console.log('NASA_API_KEY:', process.env.NASA_API_KEY ? 'Set' : 'Not set');
 
 module.exports = app;
