@@ -7,6 +7,8 @@ COPY package*.json ./
 
 # Install dependencies without cleaning cache
 RUN npm install
+RUN npm install dotenv
+
 
 # Copy the rest of the application code
 COPY . .
