@@ -18,8 +18,11 @@ const app = express();
 const port = process.env.PORT || 5090;
 
 // Middleware
-app.use(cors());
-app.use(bodyParser.json());
+app.use(cors({
+  origin: 'https://astrolab-nasa.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
